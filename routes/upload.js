@@ -23,7 +23,7 @@ app.put("/:tipo/:id",(req,res)=>{
     }
 
     //ARCHIVO/////////////////////////////
-    if(!req.files){
+    if(!req.files.image){
         return res.status(500).json({
             message:"No hay ningun archivo cargado"
         }); 
