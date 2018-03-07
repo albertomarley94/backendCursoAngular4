@@ -4,15 +4,18 @@ var bcrypt = require('bcryptjs');
 //Middlewares
 var comprobarLogin = require('../middlewares/autenticacion').isAutenticado;
 //Inicialización
-var Usuario = require("../models/usuario")
+var Usuario = require("../models/usuario");
 var app = express();
 
 //Rutas*********************************************************
 
 //Obtener todos los Usuario
-app.get("/",(request,response,next)=>{
-
+app.get("/",(req,response)=>{
+    let desde = req.query.page || 0; 
+    desde = Number(desde);
     Usuario.find({},'nombre email img role')
+        .skip(desde)
+        .limit(10)
         .exec((error,resp)=>{
             if(error){
                 return response.status(500).json({
@@ -21,18 +24,24 @@ app.get("/",(request,response,next)=>{
                 })
             }
             else{
-                return response.status(200).json({
-                    ok: true,
-                    mensaje: "Peticion usuario",
-                    usuarios: resp
-                })
+                Usuario.count({},(err,cont)=>{
+                    if(!cont){
+
+                    }
+                    return response.status(200).json({
+                        ok: true,
+                        mensaje: "Peticion usuario",
+                        total: cont,
+                        usuarios: resp
+                    }) 
+                });                        
             }
         });
 
 })
 
 //Crear un nuevo usuario
-app.post("/",(req,res)=>{
+app.post("/", comprobarLogin ,(req,res)=>{
     var body = req.body;
     //Role siempre a mayuscula
     if(body.role){body.role = body.role.toUpperCase();}

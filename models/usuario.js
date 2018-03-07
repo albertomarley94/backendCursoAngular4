@@ -32,7 +32,7 @@ var usuarioSchema = new mongoose.Schema({
         default: "USER_ROLE",
         enum: rolesValidos
     } 
-});
+},{collection: "usuarios"});
 
 usuarioSchema.plugin(uniqueValidator, {message : "{PATH} debe ser unico"});
 
