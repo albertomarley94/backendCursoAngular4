@@ -6,7 +6,41 @@ var SEED = require("../congif/config").SEED;
 //Inicialización
 var app = express();
 var Usuario = require("../models/usuario")
+/* ***********************************
+ AUTENTICACION GOOGLE
+*******/
+const {OAuth2Client} = require('google-auth-library');
+const GOOGLE_CLIENT_ID= "447708256774-rrjnlh7vf3ag53m9k7t5hcl9vhcjg75i.apps.googleusercontent.com";
+const GOOGLE_SECRET= "Sz0Y7KexoauYb-tYFHEylAd4";
 
+app.post("/google",(req,res)=>{
+    var token = req.body.token;
+    
+    if(token){
+        const oAuth2Client = new OAuth2Client(
+            GOOGLE_CLIENT_ID,
+            GOOGLE_SECRET
+        );
+        oAuth2Client.verifyIdToken({idToken: token}).then((data)=>{
+            return res.status(200).json({
+                datos: data.payload
+            })
+        }).catch(err=>{
+            return res.status(500).json({
+                error: "Token no valido"
+            })
+        });
+
+    }else{
+        return res.status(500).json({
+            error: "Fallo en la autentificación"
+        })
+    }
+    
+});
+/* ***********************************
+ AUTENTICACION NORMAL
+*******/
 app.post("/",(req,res)=>{
     var body = req.body;
 
